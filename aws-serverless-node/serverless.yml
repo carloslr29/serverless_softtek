@@ -1,0 +1,62 @@
+service: aws-serverless-node
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: us-west-2
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+      Resource:
+        - arn:aws:dynamodb:us-west-2:465869779054:table/Empleados
+
+functions:
+  getPersona:
+    handler: source/index.getPersona
+    events:
+      - httpApi:
+          path: /persona/{id}
+          method: get
+  getPersonas:
+    handler: source/index.getPersonas
+    events:
+      - httpApi:
+          path: /persona
+          method: get
+  getEmpleado:
+    handler: source/index.getEmpleado
+    events:
+      - httpApi:
+          path: /empleado/{id}
+          method: get
+  getEmpleados:
+    handler: source/index.getEmpleados
+    events:
+      - httpApi:
+          path: /empleado
+          method: get
+  insertEmpleado:
+    handler: source/index.insertEmpleado
+    events:
+      - httpApi:
+          path: /empleado
+          method: post
+
+resources:
+  Resources:
+    TaskTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Empleados
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
